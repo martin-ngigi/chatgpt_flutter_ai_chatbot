@@ -17,6 +17,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "ChatGPT App",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      useMaterial3: true,
+    ),
       home: ChatScreen(),
     );
   }

@@ -11,6 +11,8 @@ A Chatbot chat app built using the Flutter framework and OpenAI's GPT-3 language
 
 ##[Github link](https://github.com/iampawan/ChatGPT-Flutter-AIChatBot)
 
+##  [Link for api](https://beta.openai.com/account/api-keys)
+
 ## Features
 
 - Natural language understanding

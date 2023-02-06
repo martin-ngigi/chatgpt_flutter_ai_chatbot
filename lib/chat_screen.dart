@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
-import 'package:chatgpt_flutter_ai_chatbot/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-//stful
+import 'chatmessage.dart';
+import 'threedots.dart';
+
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -19,12 +20,10 @@ class _ChatScreenState extends State<ChatScreen> {
   ChatGPT? chatGPT;
 
   StreamSubscription? _subscription;
+  bool _isTyping = false;
 
-
-  //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
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     chatGPT = ChatGPT.instance;
   }
@@ -37,11 +36,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // Link for api - https://beta.openai.com/account/api-keys
 
-  void sendMessage(){
-    ChatMessage message = ChatMessage(text: _controller.text, sender: "user");
+  void _sendMessage() {
+    if (_controller.text.isEmpty) return;
+    ChatMessage message = ChatMessage(
+      text: _controller.text,
+      sender: "user",
+    );
 
     setState(() {
       _messages.insert(0, message);
+      _isTyping = true;
     });
 
     _controller.clear();
@@ -49,81 +53,79 @@ class _ChatScreenState extends State<ChatScreen> {
     final request = CompleteReq(prompt: message.text, model: kTranslateModelV3, max_tokens: 200);
 
     _subscription = chatGPT!
-        .builder("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")
+        .builder("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")
         .onCompleteStream(request: request)
         .listen((response) {
-          //log message
-          Vx.log(response!.choices[0].text);
+      //log message
+      Vx.log(response!.choices[0].text);
 
-          ChatMessage botMessage = ChatMessage(text: response.choices[0].text, sender: "Sweet ChatBot");
+      ChatMessage botMessage = ChatMessage(text: response.choices[0].text, sender: "Sweet ChatBot");
 
-          setState(() {
-            _messages.insert(0, botMessage);
-          });
-        });
-
-
+      setState(() {
+        _messages.insert(0, botMessage);
+      });
+    });
 
   }
 
-  Widget _buildTextComposer(){
+  Widget _buildTextComposer() {
     return Row(
       children: [
         Expanded(
-            child: TextField(
-              controller: _controller,
-              onSubmitted: (value) => sendMessage(),
-              decoration: InputDecoration.collapsed(hintText: "Enter a message to send"),
-            ),
+          child: TextField(
+            controller: _controller,
+            onSubmitted: (value) => _sendMessage(),
+            decoration: const InputDecoration.collapsed(
+                hintText: "Enter message here"),
+          ),
         ),
-        IconButton(
-            onPressed: (){
-              sendMessage();
-            },
-            icon: Icon(
-              Icons.send,
+        ButtonBar(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () {
+                _sendMessage();
+              },
             ),
+          ],
         ),
       ],
-    ).p16();
+    ).px16();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Chat GPT App".toUpperCase()),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.green[800],
-        titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          fontSize: 25,
+        appBar: AppBar(
+            title: Text("ChatGPT APP",),
+          centerTitle: true,
+          backgroundColor: Colors.green,
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold,),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            //push to the bottom
-            Flexible(
-              child: ListView.builder(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Flexible(
+                  child: ListView.builder(
                 reverse: true,
-                  padding: Vx.m8,
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index){
-                    return  _messages[index];
-      })
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: context.cardColor
+                padding: Vx.m8,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  return _messages[index];
+                },
+              )),
+              if (_isTyping) const ThreeDots(),
+              const Divider(
+                height: 1.0,
               ),
-              child: _buildTextComposer(),
-            )
-          ],
-        ),
-      ),
-    );
+              Container(
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                ),
+                child: _buildTextComposer(),
+              )
+            ],
+          ),
+        ));
   }
 }

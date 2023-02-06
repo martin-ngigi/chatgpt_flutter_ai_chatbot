@@ -53,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final request = CompleteReq(prompt: message.text, model: kTranslateModelV3, max_tokens: 200);
 
     _subscription = chatGPT!
-        .builder("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")
+        .builder("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")
         .onCompleteStream(request: request)
         .listen((response) {
       //log message

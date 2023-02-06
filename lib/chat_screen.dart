@@ -4,7 +4,7 @@ import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import 'chatmessage.dart';
+import 'chat_message.dart';
 import 'threedots.dart';
 
 class ChatScreen extends StatefulWidget {
